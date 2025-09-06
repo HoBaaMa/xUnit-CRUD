@@ -79,7 +79,7 @@ namespace xUnitTests
         }
         #endregion
 
-        #region GetAllCountries Test
+        #region GetAllCountries Tests
         [Fact]
         // The list of countries should be empty by default (before adding any countries)
         public void GetAllCountries_Empty()
@@ -119,6 +119,39 @@ namespace xUnitTests
             {
                 Assert.Contains(expected_country, actualCountriesResponse);
             }
+        }
+
+        #endregion
+
+        #region GetCountryById Tests
+
+        [Fact]
+        // If we supply null as CountryID, it should return nul as CountryResponse
+        public void GetCountryById_NullId()
+        {
+            // Arrange
+            Guid? countryId = null;
+
+            // Act
+            CountryResponse? countryResponse = _countriesService.GetCountryById(countryId);
+
+            // Assert
+            Assert.Null(countryResponse);
+        }
+
+        [Fact]
+        // If we supply a valid ID, it should return the matching country details as CountryResponse object
+        public void GetCountryById_ValidCountryID()
+        {
+            // Arrange
+            CountryAddRequest countryAddRequest = new CountryAddRequest() { CountryName = "China" };
+            CountryResponse addCountry = _countriesService.AddCountry(countryAddRequest);
+
+            // Act
+            CountryResponse? countryResponse = _countriesService.GetCountryById(addCountry.Id);
+
+            // Assert
+            Assert.Equal(addCountry, countryResponse);
         }
 
         #endregion

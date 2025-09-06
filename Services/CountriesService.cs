@@ -40,5 +40,15 @@ namespace Services
         {
             return _countries.Select(c => c.ToCountryResponse()).ToList();
         }
+
+        public CountryResponse? GetCountryById(Guid? id)
+        {
+            if (id is null) return null;
+
+            Country? result = _countries.FirstOrDefault(c => c.Id == id);
+            if (result is null) return null;
+
+            return new CountryResponse { CountryName = result.CountryName, Id = result.Id };
+        }
     }
 }
