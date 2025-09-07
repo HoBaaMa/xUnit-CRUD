@@ -58,5 +58,56 @@ namespace Services
 
             return _persons.FirstOrDefault(p => p.Id == id)?.ToPersonResponse();
         }
+
+        // *** WE CAN REDUCE REPETITIVE CODE BY USING REFLACTION! ***
+
+        public List<PersonResponse> GetFilteredPersons(string searchBy, string? searchText)
+        {
+            List<PersonResponse> personResponses = GetAllPersons();
+            if (string.IsNullOrWhiteSpace(searchBy) || string.IsNullOrWhiteSpace(searchText)) return personResponses;
+
+            //List<PersonResponse> matchingPersons = personResponses.W
+            switch (searchBy)
+            {
+                case nameof(Person.PersonName):
+                    personResponses = personResponses.Where(p =>
+                    (!string.IsNullOrEmpty(p.PersonName) ?
+                    p.PersonName.Contains(searchText, StringComparison.OrdinalIgnoreCase) : true)).ToList();
+                    break;
+
+                case nameof(Person.Email):
+                    personResponses = personResponses.Where(p =>
+                    (!string.IsNullOrEmpty(p.Email) ?
+                    p.Email.Contains(searchText, StringComparison.OrdinalIgnoreCase) : true)).ToList();
+                    break;
+
+                case nameof(Person.DateOfBirth):
+                    personResponses = personResponses.Where(p =>
+                    (p.DateOfBirth != null) ? 
+                    p.DateOfBirth.Value.ToString("ddd mm yyyy").Contains(searchText, StringComparison.OrdinalIgnoreCase) : true).ToList();
+                    break;
+
+                case nameof(Person.Gender):
+                    personResponses = personResponses.Where(p =>
+                    (!string.IsNullOrEmpty(p.Gender)) ? 
+                    p.Gender.Contains(searchText, StringComparison.OrdinalIgnoreCase) : true).ToList();
+                    break;
+
+                case nameof(Person.CountryId):
+                    personResponses = personResponses.Where(p =>
+                    (!string.IsNullOrEmpty(p.CountryName)) ? 
+                    p.CountryName.Contains(searchText, StringComparison.OrdinalIgnoreCase) : true).ToList();
+                    break;
+
+                case nameof(Person.Address):
+                    personResponses = personResponses.Where(p =>
+                    (!string.IsNullOrEmpty(p.Address)) ? 
+                    p.Address.Contains(searchText, StringComparison.OrdinalIgnoreCase) : true).ToList();
+                    break;
+                
+            }
+
+            return personResponses;
+        }
     }
 }

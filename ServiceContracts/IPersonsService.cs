@@ -27,5 +27,13 @@ namespace ServiceContracts
         /// <returns>A <see cref="PersonResponse"/> object containing the details of the person  if found; otherwise, <see
         /// langword="null"/>.</returns>
         PersonResponse? GetPersonById(Guid? id);
+        /// <summary>
+        /// Retrieves a list of persons filtered based on the specified criteria.
+        /// </summary>
+        /// <param name="searchBy">The field to filter by. This can be a property name such as "Name" or "Age".</param>
+        /// <param name="searchText">The value to filter against. If null or empty, no filtering is applied.</param>
+        /// <returns>A list of <see cref="PersonResponse"/> objects that match the specified filter criteria. If no matches are
+        /// found, an empty list is returned.</returns>
+        List<PersonResponse> GetFilteredPersons(string searchBy, string? searchText);
     }
 }

@@ -1,4 +1,5 @@
-﻿using ServiceContracts;
+﻿using Entities;
+using ServiceContracts;
 using ServiceContracts.DTOs;
 using Services;
 using Xunit.Abstractions;
@@ -16,6 +17,53 @@ namespace xUnitTests
             _personService = new PersonsService();
             _countriesService = new CountriesService();
             _testOutputHelper = testOutputHelper;
+        }
+
+        private List<PersonResponse> AddPersons()
+        {
+            // Arrange 
+            CountryAddRequest countryAddRequest = new CountryAddRequest { CountryName = "USA" };
+            CountryAddRequest countryAddRequest2 = new CountryAddRequest { CountryName = "UK" };
+
+            CountryResponse countryResponse = _countriesService.AddCountry(countryAddRequest);
+            CountryResponse countryResponse1 = _countriesService.AddCountry(countryAddRequest2);
+
+            PersonAddRequest personAddRequest = new PersonAddRequest
+            {
+                PersonName = "Doe",
+                Email = "doe@mail.com",
+                Address = "New York 1321",
+                CountryId = countryResponse.Id,
+                DateOfBirth = DateTime.Parse("2001-04-02"),
+                Gender = ServiceContracts.Enums.GenderOptions.Male,
+                ReceiveNewsLetters = false
+            };
+            PersonAddRequest personAddRequest2 = new PersonAddRequest
+            {
+                PersonName = "Mark",
+                Email = "mark@mail.com",
+                Address = "UK 9421",
+                CountryId = countryResponse1.Id,
+                DateOfBirth = DateTime.Parse("2008-09-10"),
+                Gender = ServiceContracts.Enums.GenderOptions.Male,
+                ReceiveNewsLetters = true
+            };
+
+            List<PersonAddRequest> personAddRequests = new List<PersonAddRequest>
+            {
+                personAddRequest,
+                personAddRequest2
+            };
+
+
+            List<PersonResponse> personResponsesFromAdd = new List<PersonResponse>();
+
+            foreach (PersonAddRequest person in personAddRequests)
+            {
+                PersonResponse personResponse = _personService.AddPerson(person);
+                personResponsesFromAdd.Add(personResponse);
+            }
+            return personResponsesFromAdd;
         }
 
         #region AddPerson Tests
@@ -112,7 +160,7 @@ namespace xUnitTests
         #endregion
 
         #region GetAllPersons Tests
-        // The GetAllPersons() should return an empty lis by default
+        // The GetAllPersons() should return an empty list by default
         [Fact]
         public void GetAllPersons_EmptyList()
         {
@@ -127,46 +175,7 @@ namespace xUnitTests
         [Fact]
         public void GetAllPersons_AddFewPersons()
         {
-            // Arrange 
-            CountryAddRequest countryAddRequest = new CountryAddRequest { CountryName = "USA" };
-            CountryAddRequest countryAddRequest2 = new CountryAddRequest { CountryName = "UK" };
-
-            CountryResponse countryResponse = _countriesService.AddCountry(countryAddRequest);
-            CountryResponse countryResponse1 = _countriesService.AddCountry(countryAddRequest2);
-
-            PersonAddRequest personAddRequest = new PersonAddRequest
-            {
-                PersonName = "Doe",
-                Email = "doe@mail.com",
-                Address = "New York 1321",
-                CountryId = countryResponse.Id,
-                DateOfBirth = DateTime.Parse("2001-04-02"),
-                Gender = ServiceContracts.Enums.GenderOptions.Male,
-                ReceiveNewsLetters = false
-            };
-            PersonAddRequest personAddRequest2 = new PersonAddRequest
-            {
-                PersonName = "Mark",
-                Email = "mark@mail.com",
-                Address = "UK 9421",
-                CountryId = countryResponse1.Id,
-                DateOfBirth = DateTime.Parse("2008-09-10"),
-                Gender = ServiceContracts.Enums.GenderOptions.Male,
-                ReceiveNewsLetters = true
-            };
-
-            List<PersonAddRequest> personAddRequests = new List<PersonAddRequest>
-            {
-                personAddRequest,
-                personAddRequest2
-            };
-            List<PersonResponse> personResponsesFromAdd = new List<PersonResponse>();
-
-            foreach(PersonAddRequest person in personAddRequests)
-            {
-                PersonResponse personResponse = _personService.AddPerson(person);
-                personResponsesFromAdd.Add(personResponse);
-            }
+            List<PersonResponse> personResponsesFromAdd = AddPersons();
 
             // Print personResponsesFromAdd
             _testOutputHelper.WriteLine("Expected:");
@@ -189,6 +198,99 @@ namespace xUnitTests
             foreach (PersonResponse person in personResponsesFromGet)
             {
                 _testOutputHelper.WriteLine(person.ToString());
+            }
+
+        }
+        #endregion
+
+        #region GetFilteredPersons Tests
+        // The GetFilteredPersons() should return an empty list by default
+        [Fact]
+        public void GetFilteredPersons_EmptyList()
+        {
+            // Act
+            List<PersonResponse> personResponses = _personService.GetFilteredPersons("","");
+
+            // Assert
+            Assert.Empty(personResponses);
+        }
+
+        // If the search text is empty and search by is "Person Name", it should return all persons
+        [Fact]
+        public void GetFilteredPersons_EmptySearchText()
+        {
+            List<PersonResponse> personResponsesFromAdd = AddPersons();
+
+            // Print personResponsesFromAdd
+            _testOutputHelper.WriteLine("Expected:");
+            foreach (PersonResponse person in personResponsesFromAdd)
+            {
+                _testOutputHelper.WriteLine(person.ToString());
+            }
+
+            // Act
+            List<PersonResponse> personResponsesFromSearch = _personService.GetFilteredPersons(nameof(Person.PersonName), "");
+
+            // Assert
+            foreach (PersonResponse person in personResponsesFromAdd)
+            {
+                Assert.Contains(person, personResponsesFromSearch);
+            }
+
+            // Print personResponsesFromGet
+            _testOutputHelper.WriteLine("Actual:");
+            foreach (PersonResponse person in personResponsesFromSearch)
+            {
+                _testOutputHelper.WriteLine(person.ToString());
+            }
+
+        }
+
+        // Fisrt we will add few persons; and then we will search based on person name with some search string. It should return the matching persons
+        [Fact]
+        public void GetFilteredPersons_SearchByPersonName()
+        {
+            List<PersonResponse> personResponsesFromAdd = AddPersons();
+
+            // Print personResponsesFromAdd
+            _testOutputHelper.WriteLine("Expected:");
+            foreach (PersonResponse person in personResponsesFromAdd)
+            {
+                if (person.PersonName is not null)
+                {
+                    if (person.PersonName.Contains("do", StringComparison.OrdinalIgnoreCase))
+                    {
+                        _testOutputHelper.WriteLine(person.ToString());
+                    }
+                }
+            }
+
+            // Act
+            List<PersonResponse> personResponsesFromSearch = _personService.GetFilteredPersons(nameof(Person.PersonName), "Do");
+
+            // Assert
+            foreach (PersonResponse person in personResponsesFromAdd)
+            {
+                if (person.PersonName is not null)
+                {
+                    if (person.PersonName.Contains("do", StringComparison.OrdinalIgnoreCase))
+                    {
+                        Assert.Contains(person, personResponsesFromSearch);
+                    }
+                }
+            }
+
+            // Print personResponsesFromGet
+            _testOutputHelper.WriteLine("Actual:");
+            foreach (PersonResponse person in personResponsesFromSearch)
+            {
+                if (person.PersonName is not null)
+                {
+                    if (person.PersonName.Contains("do", StringComparison.OrdinalIgnoreCase))
+                    {
+                        _testOutputHelper.WriteLine(person.ToString());
+                    }
+                }
             }
 
         }
