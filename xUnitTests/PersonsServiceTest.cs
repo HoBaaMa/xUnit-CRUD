@@ -1,19 +1,21 @@
-﻿using Entities;
-using ServiceContracts;
+﻿using ServiceContracts;
 using ServiceContracts.DTOs;
 using Services;
-using System.Runtime.InteropServices;
-using Xunit;
+using Xunit.Abstractions;
+
 namespace xUnitTests
 {
     public class PersonsServiceTest
     {
         private readonly IPersonsService _personService;
         private readonly ICountriesService _countriesService;
-        public PersonsServiceTest()
+        private readonly ITestOutputHelper _testOutputHelper;
+
+        public PersonsServiceTest(ITestOutputHelper testOutputHelper)
         {
             _personService = new PersonsService();
             _countriesService = new CountriesService();
+            _testOutputHelper = testOutputHelper;
         }
 
         #region AddPerson Tests
@@ -166,6 +168,13 @@ namespace xUnitTests
                 personResponsesFromAdd.Add(personResponse);
             }
 
+            // Print personResponsesFromAdd
+            _testOutputHelper.WriteLine("Expected:");
+            foreach(PersonResponse person in personResponsesFromAdd)
+            {
+                _testOutputHelper.WriteLine(person.ToString());
+            }
+
             // Act
             List<PersonResponse> personResponsesFromGet = _personService.GetAllPersons();
 
@@ -174,6 +183,14 @@ namespace xUnitTests
             {
                 Assert.Contains(person, personResponsesFromGet);
             }
+
+            // Print personResponsesFromGet
+            _testOutputHelper.WriteLine("Actual:");
+            foreach (PersonResponse person in personResponsesFromGet)
+            {
+                _testOutputHelper.WriteLine(person.ToString());
+            }
+
         }
         #endregion
     }
