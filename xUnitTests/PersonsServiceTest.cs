@@ -295,5 +295,45 @@ namespace xUnitTests
 
         }
         #endregion
+
+        #region GetSortedPersons Tests
+        // When we sort based on PersonName in DESC, it should return persons list in descending on PersonName
+        [Fact]
+        public void GetSortedPersons_SortByPersonName()
+        {
+            List<PersonResponse> personResponsesFromAdd = AddPersons();
+
+            // Print personResponsesFromAdd
+            _testOutputHelper.WriteLine("Expected:");
+            foreach (PersonResponse person in personResponsesFromAdd)
+            {
+                _testOutputHelper.WriteLine(person.ToString());
+            }
+            List<PersonResponse> allPersons = _personService.GetAllPersons();
+
+            // Act
+            List<PersonResponse> personResponsesFromSort = _personService.GetSortedPersons(allPersons, nameof(Person.PersonName), ServiceContracts.Enums.SortOrderOptions.DESC);
+
+            // ✅ Sort the expected list BEFORE assertion
+            personResponsesFromAdd = personResponsesFromAdd.OrderByDescending(p => p.PersonName).ToList();
+
+            // Assert - Now both lists are in the same order
+            for (int i = 0; i < personResponsesFromAdd.Count; i++)
+            {
+                Assert.Equal(personResponsesFromAdd[i], personResponsesFromSort[i]);
+            }
+
+            // Print results
+            _testOutputHelper.WriteLine("Expected (after sorting):");
+            foreach (PersonResponse person in personResponsesFromAdd)
+            {
+                _testOutputHelper.WriteLine(person.ToString());
+            }
+                        
+            _testOutputHelper.WriteLine("Actual:");
+
+        }
+
+        #endregion
     }
 }
