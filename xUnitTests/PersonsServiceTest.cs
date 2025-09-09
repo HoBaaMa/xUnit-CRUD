@@ -335,5 +335,86 @@ namespace xUnitTests
         }
 
         #endregion
+
+        #region UpdatePerson Tests
+        // When we supply null as PersonUpdateRequest, it should throw ArgumentNullException
+        [Fact]
+        public void UpdatePerson_NullUpdateRequest()
+        {
+            // Arrange
+            PersonUpdateRequest? personUpdateRequest = null;
+
+            // Assert
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                // Act
+                _personService.UpdatePerson(personUpdateRequest);
+            });
+        }
+
+        // Wheb we supply invalid person ID, it should throw ArgumentException
+        [Fact]
+        public void UpdatePerson_InvalidPersonID()
+        {
+            // Arrange
+            PersonUpdateRequest personUpdateRequest = new PersonUpdateRequest { Id = Guid.NewGuid() };
+
+            // Assert
+            Assert.Throws<ArgumentException>(() =>
+            {
+                // Act
+                _personService.UpdatePerson(personUpdateRequest);
+            });
+        }
+
+        // When PersonName is null, it should throw ArgumentException
+        [Fact]
+        public void UpdatePerson_NullPersonName()
+        {
+            // Arrange
+            CountryAddRequest countryAddRequest = new CountryAddRequest() { CountryName = "UK" };
+            CountryResponse countryResponse = _countriesService.AddCountry(countryAddRequest);
+
+            PersonAddRequest personAddRequest = new PersonAddRequest { PersonName = "Joe", Address = "New York 2941", CountryId = countryResponse.Id, DateOfBirth = DateTime.Parse("2001-09-01"), Email = "joe@mail.com", Gender = ServiceContracts.Enums.GenderOptions.Male, ReceiveNewsLetters = false };
+
+            PersonResponse personResponseFromAdd = _personService.AddPerson(personAddRequest);
+
+            PersonUpdateRequest personUpdateRequest = personResponseFromAdd.ToPersonUpdate();
+            personUpdateRequest.PersonName = null;
+
+
+            // Assert
+            Assert.Throws<ArgumentException>(() =>
+            {
+                // Act
+                _personService.UpdatePerson(personUpdateRequest);
+            });
+        }
+
+        // First, add new person and try to update the person name and email
+        [Fact]
+        public void UpdatePerson_ProperPersonUpdateRequest()
+        {
+            // Arrange
+            CountryAddRequest countryAddRequest = new CountryAddRequest() { CountryName = "UK" };
+            CountryResponse countryResponse = _countriesService.AddCountry(countryAddRequest);
+
+            PersonAddRequest personAddRequest = new PersonAddRequest { PersonName = "Joe", Address = "New York 2941", CountryId = countryResponse.Id, DateOfBirth = DateTime.Parse("2001-09-01"), Email = "joe@mail.com", Gender = ServiceContracts.Enums.GenderOptions.Male, ReceiveNewsLetters = false };
+
+            PersonResponse personResponseFromAdd = _personService.AddPerson(personAddRequest);
+
+            PersonUpdateRequest personUpdateRequest = personResponseFromAdd.ToPersonUpdate();
+            personUpdateRequest.PersonName = "Mark";
+            personUpdateRequest.Email = "mark.mail@gmail.com";
+
+            // Act 
+            PersonResponse updatePerson = _personService.UpdatePerson(personUpdateRequest);
+            PersonResponse? getPerson = _personService.GetPersonById(personUpdateRequest.Id);
+
+            // Assert
+            Assert.Equal(getPerson, updatePerson);
+        }
+
+        #endregion
     }
 }

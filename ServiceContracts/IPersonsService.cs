@@ -45,5 +45,11 @@ namespace ServiceContracts
         /// <see cref="SortOrderOptions.Descending"/> for descending order.</param>
         /// <returns>A sorted list of persons. If <paramref name="allPersons"/> is empty, an empty list is returned.</returns>
         List<PersonResponse> GetSortedPersons(List<PersonResponse> allPersons, string sortBy, SortOrderOptions sortOrder);
+        /// <summary>
+        /// Updates the details of an existing person based on the provided update request.
+        /// </summary>
+        /// <param name="personUpdateRequest">The request containing the updated information for the person.  This parameter cannot be null.</param>
+        /// <returns>A <see cref="PersonResponse"/> object containing the updated details of the person.</returns>
+        PersonResponse UpdatePerson(PersonUpdateRequest? personUpdateRequest);
     }
 }
