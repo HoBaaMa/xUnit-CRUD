@@ -416,5 +416,39 @@ namespace xUnitTests
         }
 
         #endregion
+
+        #region DeletePerson Tests
+        // If you supply an valid PersonID, it should return true
+        [Fact]
+        public void DeletePerson_ValidPersonID()
+        {
+            // Arrange 
+            CountryAddRequest countryAddRequest = new CountryAddRequest { CountryName = "UK" };
+            CountryResponse countryResponse = _countriesService.AddCountry(countryAddRequest);
+
+            PersonAddRequest personAddRequest = new PersonAddRequest { Address = "NY 2813", CountryId = countryResponse.Id, DateOfBirth = DateTime.Parse("2001-02-02"), Email = "jack@mail.com", Gender = ServiceContracts.Enums.GenderOptions.Male, PersonName = "Jack", ReceiveNewsLetters = true };
+            PersonResponse personResponse = _personService.AddPerson(personAddRequest);
+
+            // Act
+            bool isDeleted = _personService.DeletePerson(personResponse.Id);
+
+            // Assert
+
+            Assert.True(isDeleted);
+        }
+
+        // If you supply an invalid PersonID, it should return false
+        [Fact]
+        public void DeletePerson_InvalidPersonID()
+        {
+            // Act
+            bool isDeleted = _personService.DeletePerson(Guid.NewGuid());
+
+            // Assert
+
+            Assert.False(isDeleted);
+        }
+
+        #endregion
     }
 }

@@ -51,5 +51,11 @@ namespace ServiceContracts
         /// <param name="personUpdateRequest">The request containing the updated information for the person.  This parameter cannot be null.</param>
         /// <returns>A <see cref="PersonResponse"/> object containing the updated details of the person.</returns>
         PersonResponse UpdatePerson(PersonUpdateRequest? personUpdateRequest);
+        /// <summary>
+        /// Deletes a person based on the given person id
+        /// </summary>
+        /// <param name="id">PersonID to delete</param>
+        /// <returns>True, if the deletion is successful; otherwise false</returns>
+        bool DeletePerson(Guid? id);
     }
 }

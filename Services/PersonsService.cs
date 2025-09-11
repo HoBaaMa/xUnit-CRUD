@@ -194,5 +194,15 @@ namespace Services
 
             return matchingPerson.ToPersonResponse();
         }
+
+        public bool DeletePerson(Guid? id)
+        {
+            if (id is null) throw new ArgumentNullException();
+            Person? person = _persons.FirstOrDefault(p => p.Id == id);
+            if (person is null) return false;
+
+            _persons.Remove(person);
+            return true;
+        }
     }
 }
