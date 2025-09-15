@@ -70,6 +70,7 @@ namespace ServiceContracts.DTOs
             {
                 Id = person.Id,
                 PersonName = person.PersonName,
+                Email = person.Email,
                 Address = person.Address,
                 DateOfBirth = person.DateOfBirth,
                 ReceiveNewsLetters = person.ReceiveNewsLetters,

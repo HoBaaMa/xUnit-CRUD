@@ -24,7 +24,7 @@ namespace Services
 
                     new Person {Id = Guid.Parse("F54A2EE7-5C2C-4EB3-A058-C47D37A32E09"), Address = "3 Bobwhite Way", PersonName= "Shep", Email = "sphillcox2@rakuten.co.jp", DateOfBirth = DateTime.Parse("2008-11-28"), Gender = "Male", ReceiveNewsLetters = true, CountryId = Guid.Parse("8AE16A78-29A1-4ED3-A9C8-262C8A3C3DB6") },
 
-                    new Person {Id = Guid.Parse("ZE0E5871-E7C8-40B6-A9B0-2B7458CB1358"), Address = "55 Amoth Street", PersonName= "Neddie", Email = "nfillan3@accuweather.com", DateOfBirth = DateTime.Parse("2016-03-22"), Gender = "Male", ReceiveNewsLetters = false, CountryId = Guid.Parse("8AE16A78-29A1-4ED3-A9C8-262C8A3C3DB6") },
+                    new Person {Id = Guid.Parse("BE0E5871-E7C8-40B6-A9B0-2B7458CB1358"), Address = "55 Amoth Street", PersonName= "Neddie", Email = "nfillan3@accuweather.com", DateOfBirth = DateTime.Parse("2016-03-22"), Gender = "Male", ReceiveNewsLetters = false, CountryId = Guid.Parse("8AE16A78-29A1-4ED3-A9C8-262C8A3C3DB6") },
 
                     new Person {Id = Guid.Parse("FE0E5871-E7C8-40B6-A9B0-2B7458CB1358"), Address = "55 Amoth Street", PersonName= "Henry", Email = "hmugford4@blinklist.com", DateOfBirth = DateTime.Parse("2018-06-14"), Gender = "Male", ReceiveNewsLetters = false, CountryId = Guid.Parse("59943C29-6CDD-4A7F-846B-0256DF311739") },
 
@@ -69,14 +69,17 @@ namespace Services
 
         public List<PersonResponse> GetAllPersons()
         {
-            return _persons.Select(p => p.ToPersonResponse()).ToList();
+            return _persons.Select(p => ConvertPersonToPersonResponse(p)).ToList();
         }
 
         public PersonResponse? GetPersonById(Guid? id)
         {
             if (id is null) return null;
 
-            return _persons.FirstOrDefault(p => p.Id == id)?.ToPersonResponse();
+            Person? person = _persons.FirstOrDefault(p => p.Id == id);
+            if (person is null) return null;
+
+            return ConvertPersonToPersonResponse(person);
         }
 
         // *** WE CAN REDUCE REPETITIVE CODE BY USING REFLACTION! ***
@@ -211,7 +214,7 @@ namespace Services
             matchingPerson.DateOfBirth = matchingPerson.DateOfBirth;
             matchingPerson.ReceiveNewsLetters = matchingPerson.ReceiveNewsLetters;
 
-            return matchingPerson.ToPersonResponse();
+            return ConvertPersonToPersonResponse(matchingPerson);
         }
 
         public bool DeletePerson(Guid? id)
