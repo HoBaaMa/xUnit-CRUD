@@ -10,10 +10,29 @@ namespace Services
     {
         private readonly List<Person> _persons;
         private readonly ICountriesService _countriesService;
-        public PersonsService()
+        public PersonsService(bool initialize = true)
         {
             _persons = new List<Person>();
             _countriesService = new CountriesService();
+            if (initialize)
+            {
+                _persons.AddRange(new List<Person>
+                {
+                    new Person {Id = Guid.Parse("DC48E1BB-CEDE-498F-BC9F-AEE381E6E562"), Address = "59 Briar Crest Center", PersonName= "Simon", Email = "svaladez0@ycombinator.com", DateOfBirth = DateTime.Parse("2016-03-22"), Gender = "Male", ReceiveNewsLetters = true, CountryId = Guid.Parse("ECA27C47-F6D9-4341-93C8-09351D80F11A") },
+
+                    new Person {Id = Guid.Parse("5F85E621-1D39-4550-8B94-5A553522846D"), Address = "4 Bluestem Parkway", PersonName= "Tuckie", Email = "tdainter1@ocn.ne.jp", DateOfBirth = DateTime.Parse("2008-11-28"), Gender = "Male", ReceiveNewsLetters = true, CountryId = Guid.Parse("A63ADAAD-3BA2-4C1C-8662-B486BC214EE9") },
+
+                    new Person {Id = Guid.Parse("F54A2EE7-5C2C-4EB3-A058-C47D37A32E09"), Address = "3 Bobwhite Way", PersonName= "Shep", Email = "sphillcox2@rakuten.co.jp", DateOfBirth = DateTime.Parse("2008-11-28"), Gender = "Male", ReceiveNewsLetters = true, CountryId = Guid.Parse("8AE16A78-29A1-4ED3-A9C8-262C8A3C3DB6") },
+
+                    new Person {Id = Guid.Parse("ZE0E5871-E7C8-40B6-A9B0-2B7458CB1358"), Address = "55 Amoth Street", PersonName= "Neddie", Email = "nfillan3@accuweather.com", DateOfBirth = DateTime.Parse("2016-03-22"), Gender = "Male", ReceiveNewsLetters = false, CountryId = Guid.Parse("8AE16A78-29A1-4ED3-A9C8-262C8A3C3DB6") },
+
+                    new Person {Id = Guid.Parse("FE0E5871-E7C8-40B6-A9B0-2B7458CB1358"), Address = "55 Amoth Street", PersonName= "Henry", Email = "hmugford4@blinklist.com", DateOfBirth = DateTime.Parse("2018-06-14"), Gender = "Male", ReceiveNewsLetters = false, CountryId = Guid.Parse("59943C29-6CDD-4A7F-846B-0256DF311739") },
+
+                    new Person {Id = Guid.Parse("2BF1E94E-4A22-4B81-BA3E-40656766059E"), Address = "9 Calypso Plaza", PersonName= "Rubina", Email = "rkoeppe8@washingtonpost.com", DateOfBirth = DateTime.Parse("2018-08-22"), Gender = "Male", ReceiveNewsLetters = true, CountryId = Guid.Parse("59943C29-6CDD-4A7F-846B-0256DF311739") },
+
+                    new Person {Id = Guid.Parse("62D67EE7-BDA4-4865-81D5-16C5A58F1F8F"), Address = "546 Menomonie Circle", PersonName= "Everard", Email = "elenin9@twitter.com", DateOfBirth = DateTime.Parse("2015-08-28"), Gender = "Male", ReceiveNewsLetters = false, CountryId = Guid.Parse("ECA27C47-F6D9-4341-93C8-09351D80F11A") }
+                });
+            }
         }
 
         private PersonResponse ConvertPersonToPersonResponse(Person person)

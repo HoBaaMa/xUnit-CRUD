@@ -1,15 +1,29 @@
 ﻿using Entities;
 using ServiceContracts;
 using ServiceContracts.DTOs;
+using System.Collections.Generic;
 
 namespace Services
 {
     public class CountriesService : ICountriesService
     {
         private readonly List<Country> _countries;
-        public CountriesService()
+        public CountriesService(bool initialize = true)
         {
             _countries = new List<Country>();
+
+            if (initialize)
+            {
+                _countries.AddRange(new List<Country>() 
+                {
+                    new Country() { Id = Guid.Parse("ECA27C47-F6D9-4341-93C8-09351D80F11A"), CountryName = "Egypt" },
+                    new Country() { Id = Guid.Parse("A63ADAAD-3BA2-4C1C-8662-B486BC214EE9"), CountryName = "UK" },
+                    new Country() { Id = Guid.Parse("8AE16A78-29A1-4ED3-A9C8-262C8A3C3DB6"), CountryName = "USA" },
+                    new Country() { Id = Guid.Parse("59943C29-6CDD-4A7F-846B-0256DF311739"), CountryName = "Germany" },
+                    new Country() { Id = Guid.Parse("49C4DCCE-F5FB-4045-BAD5-34E8D33B89A5"), CountryName = "China" },
+                });
+                
+            }
         }
         public CountryResponse AddCountry(CountryAddRequest? countryAddRequest)
         {
